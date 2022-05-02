@@ -1,0 +1,22 @@
+app:
+  name: MediumuZ
+  host: localhost
+  port: '8080'
+  version: '1.0'
+
+db:
+  dbname: postgres
+  host: localhost
+  port: '5434'
+  sslmode: disable
+  username: postgres
+
+redis:
+  host: localhost
+  port: '6379'
+  db: 0
+
+smtp:
+  host: smtp.gmail.com
+  port: 587
+  senderEmail: babdusalom72@gmail.com
