@@ -31,57 +31,20 @@ func (repo *UserDB) GetUserData(id string, logrus *logrus.Logger) (model.UserFul
 	return user, nil
 }
 
-// func (repo *UserDB) UpdateUserVerified(id string, logrus *logrus.Logger) (effectedRowsNum int64, err error) {
-// 	tm := time.Now()
-// 	query := fmt.Sprintf("	UPDATE %s SET is_verified = true,verification_date=$1,updated_at=$2	WHERE id = $3  RETURNING id ", usersTable)
-// 	rows, err := repo.db.Exec(query, tm, tm, id)
-
-// 	if err != nil {
-// 		logrus.Errorf("ERROR: Update verificationCode failed : %v", err)
-// 		return 0, err
-// 	}
-// 	effectedRowsNum, err = rows.RowsAffected()
-// 	if err != nil {
-// 		logrus.Errorf("ERROR: Update verificationCode effectedRowsNum failed : %v", err)
-// 		return 0, err
-// 	}
-// 	logrus.Info("DONE:  email verified")
-// 	return effectedRowsNum, nil
-// }
-
 func (repo *UserDB) UpdateAccountImage(id int, filePath string, logrus *logrus.Logger) (int64, error) {
 	tm := time.Now()
 	query := fmt.Sprintf("	UPDATE %s SET account_image_path=$1,updated_at=$2	WHERE id = $3  RETURNING id ", usersTable)
 	rows, err := repo.db.Exec(query, filePath, tm, id)
 
 	if err != nil {
-		logrus.Errorf("ERROR: Update verificationCode : %v", err)
+		logrus.Errorf("ERROR: Update photo failed : %v", err)
 		return 0, err
 	}
 	effectedRowsNum, err := rows.RowsAffected()
 	if err != nil {
-		logrus.Errorf("ERROR: Update verificationCode effectedRowsNum : %v", err)
+		logrus.Errorf("ERROR: Update  photo failed: %v", err)
 		return 0, err
 	}
-	logrus.Info("DONE:Update verify email")
+	logrus.Info("DONE:Updated photo successfully")
 	return effectedRowsNum, nil
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// REDIS
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-// func (repo *UserDB) CheckCode(email, code string, logrus *logrus.Logger) error {
-// 	saveCode, err := repo.redis.Get(email).Result()
-// 	if err != nil {
-// 		logrus.Errorf("ERROR:don't save code %s", err)
-// 		return err
-// 	}
-// 	if saveCode != code {
-// 		return errors.New("code not found ")
-// 	}
-// 	logrus.Info("DONE: verify code")
-// 	return nil
-// }

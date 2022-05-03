@@ -31,20 +31,6 @@ func (service *UserService) GetUserData(id string, logrus *logrus.Logger) (user 
 	return user, nil
 }
 
-// func (service *UserService) VerifyCode(id, email, code string, logrus *logrus.Logger) (int64, error) {
-// 	err := service.repo.CheckCode(email, code, logrus)
-// 	if err != nil {
-// 		logrus.Errorf("ERROR: check error code : %v", err)
-// 		return 0, err
-// 	}
-// 	effectedRowsNum, err := service.repo.UpdateUserVerified(id, logrus)
-// 	if err != nil {
-// 		logrus.Errorf("ERROR: check error code update : %v", err)
-// 		return 0, err
-// 	}
-// 	return effectedRowsNum, nil
-// }
-
 func (service *UserService) UploadAccountImage(file multipart.File, header *multipart.FileHeader, user model.UserFull, logrus *logrus.Logger) (string, error) {
 
 	filename := header.Filename
