@@ -42,7 +42,7 @@ func (service *UserService) UploadAccountImage(file multipart.File, header *mult
 	}
 	err = os.Chmod(folderPath, 0777)
 	if err != nil {
-		logrus.Errorf("ERROR: Failed Access Permission denied %s", err)
+		logrus.Errorf("ERROR: Failed Accessss Permission denied %s", err)
 		return "", err
 	}
 	filePath := folderPath + filename
