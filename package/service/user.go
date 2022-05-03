@@ -18,8 +18,12 @@ func NewUserService(repo repository.User) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) ConfirmEmail(code string, logrus *logrus.Logger) {
-
+func (service *UserService) UpdateProfile(id int, username string, city string, phone string, logrus *logrus.Logger) (int, error) {
+	count, err := service.repo.UpdateProfile(id, username, city, phone, logrus)
+	if err != nil {
+		return 0, err
+	}
+	return int(count), nil
 }
 
 func (service *UserService) GetUserData(id string, logrus *logrus.Logger) (user model.UserFull, err error) {

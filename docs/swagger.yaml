@@ -54,6 +54,18 @@ definitions:
         default: MY
         type: string
     type: object
+  model.UserUpdate:
+    properties:
+      city:
+        default: Navoi
+        type: string
+      phone:
+        default: +9989 99 331 96 12
+        type: string
+      username:
+        default: MY
+        type: string
+    type: object
   model.VerificationCode:
     properties:
       code:
@@ -105,8 +117,53 @@ paths:
       summary: Resend cod for  Verification Email
       tags:
       - Profile
-  /api/account/upload-image:
+  /api/account/update:
     post:
+      consumes:
+      - application/json
+      description: update profile
+      operationId: update-profile
+      parameters:
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.UserUpdate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/error.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/error.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/error.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/error.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/error.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdateProfile
+      tags:
+      - Profile
+  /api/account/upload-image:
+    patch:
       consumes:
       - application/json
       - multipart/form-data

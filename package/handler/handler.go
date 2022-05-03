@@ -46,12 +46,12 @@ func (handler *Handler) InitRoutes() *gin.Engine {
 	{
 		account := api.Group("/account")
 		{
-			// account.POST("/verify", handler.ConfirmEmail)
-			account.GET("/resend", handler.resendCodeToEmail)
-			account.POST("/update", handler.updateAccount)
+			account.PATCH("/upload-image", handler.uploadAccountImage)
+			account.POST("/update", handler.UpdateProfile)
+
 			account.GET("/get", handler.getUser)
+			account.GET("/resend", handler.resendCodeToEmail)
 			account.GET("/search", handler.getUser)
-			account.POST("/upload-image", handler.uploadAccountImage)
 		}
 	}
 	return router

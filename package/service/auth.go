@@ -88,18 +88,3 @@ func generatePasswordHash(password string) string {
 	hash.Write([]byte(password))
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
-
-// func (service *AuthService) SendMessageEmail(email string, userName string, logrus *logrus.Logger) error {
-// 	logrus.Infof(email)
-// 	code, err := SendCodeToEmail(email, userName, logrus)
-// 	if err != nil {
-// 		logrus.Errorf("ERROR: send email error %v", err)
-// 		return err
-// 	}
-// 	err = service.repo.SaveVerificationCode(email, code, logrus)
-// 	if err != nil {
-// 		logrus.Errorf("ERROR: save verification code error %v", err)
-// 		return err
-// 	}
-// 	return nil
-// }

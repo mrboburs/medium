@@ -3,6 +3,8 @@ package handler
 import (
 	"fmt"
 	"mediumuz/model"
+	"mediumuz/package/repository"
+
 	// "mediumuz/package/repository"
 	"mediumuz/util/error"
 	"net/http"
@@ -42,6 +44,43 @@ func (handler *Handler) resendCodeToEmail(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, model.ResponseSuccess{Message: "DONE"})
 }
 
+// @Summary UpdateProfile
+// @Tags Profile
+// @Description update profile
+// @ID update-profile
+// @Accept  json
+// @Produce  json
+// @Param input body model.UserUpdate true "account info"
+/// @Success 200 {object} model.ResponseSuccess
+// @Failure 400,404 {object} error.errorResponse
+// @Failure 409 {object} error.errorResponse
+// @Failure 500 {object} error.errorResponse
+// @Failure default {object} error.errorResponse
+// @Router /api/account/update [post]
+// @Security ApiKeyAuth
+func (handler *Handler) UpdateProfile(ctx *gin.Context) {
+	logrus := handler.logrus
+	var input model.UserUpdate
+	err := ctx.BindJSON(&input)
+	if err != nil {
+		error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, err.Error(), logrus)
+		return
+	}
+
+	effectedRowsNum, err := handler.services.User.UpdateProfile(repository.GetAccountId(), input.UserName, input.City, input.Phone, logrus)
+	if effectedRowsNum == 0 {
+		error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, "User not found", logrus)
+		return
+	} else if err != nil {
+		error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, err.Error(), logrus)
+		return
+	} else {
+
+		ctx.JSON(http.StatusOK, model.ResponseSuccess{Message: "DONE", Data: effectedRowsNum})
+	}
+
+}
+
 // @Summary Upload Account Image
 // @Description Upload Account Image
 // @ID upload-image
@@ -59,7 +98,7 @@ func (handler *Handler) resendCodeToEmail(ctx *gin.Context) {
 // @Failure 409 {object} error.errorResponse
 // @Failure 500 {object} error.errorResponse
 // @Failure default {object} error.errorResponse
-// @Router   /api/account/upload-image [POST]
+// @Router   /api/account/upload-image [PATCH]
 //@Security ApiKeyAuth
 func (handler *Handler) uploadAccountImage(ctx *gin.Context) {
 	logrus := handler.logrus

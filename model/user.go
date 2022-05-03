@@ -11,6 +11,12 @@ type User struct {
 	City     string `json:"city" default:"Navoi"`
 	Phone    string `json:"phone" default:"+9989 99 331 96 12"`
 }
+type UserUpdate struct {
+	UserName string `json:"username" default:"MY"`
+
+	City  string `json:"city" default:"Navoi"`
+	Phone string `json:"phone" default:"+9989 99 331 96 12"`
+}
 
 type UserFull struct {
 	Id                int            `json:"-" db:"id"`

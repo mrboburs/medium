@@ -18,7 +18,8 @@ type Authorization interface {
 
 type User interface {
 	GetUserData(id string, logrus *logrus.Logger) (user model.UserFull, err error)
-	// VerifyCode(id string, username, code string, logrus *logrus.Logger) (int64, error)
+	UpdateProfile(id int, username string, city string, phone string, logrus *logrus.Logger) (int, error)
+
 	UploadAccountImage(file multipart.File, header *multipart.FileHeader, user model.UserFull, logrus *logrus.Logger) (filePath string, err error)
 	UpdateAccountImage(id int, filePath string, logrus *logrus.Logger) (int64, error)
 }

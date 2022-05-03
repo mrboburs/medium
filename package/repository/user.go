@@ -18,7 +18,23 @@ type UserDB struct {
 func NewUserDB(db *sqlx.DB) *UserDB {
 	return &UserDB{db: db}
 }
+func (repo *UserDB) UpdateProfile(id int, username string, city string, phone string, logrus *logrus.Logger) (int64, error) {
+	tm := time.Now()
+	query := fmt.Sprintf("	UPDATE %s SET username=$1, city=$2, phone=$3, updated_at=$4	WHERE id = $5  RETURNING id ", usersTable)
+	rows, err := repo.db.Exec(query, username, city, phone, tm, id)
 
+	if err != nil {
+		logrus.Errorf("ERROR: Updating failed : %v", err)
+		return 0, err
+	}
+	effectedRowsNum, err := rows.RowsAffected()
+	if err != nil {
+		logrus.Errorf("ERROR:  effectedRowsNum failed : %v", err)
+		return 0, err
+	}
+	logrus.Info("DONE:    updated profile data saved")
+	return effectedRowsNum, nil
+}
 func (repo *UserDB) GetUserData(id string, logrus *logrus.Logger) (model.UserFull, error) {
 	var user model.UserFull
 	query := fmt.Sprintf("SELECT  	id,	email,	firstname,	secondname,	city,	is_verified,	account_image_path,	phone,	rating,	post_views,	is_super_user	FROM %s WHERE id=$1 ", usersTable)
