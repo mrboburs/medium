@@ -35,9 +35,10 @@ func (repo *UserDB) UpdateProfile(id int, username string, city string, phone st
 	logrus.Info("DONE:    updated profile data saved")
 	return effectedRowsNum, nil
 }
-func (repo *UserDB) GetUserData(id string, logrus *logrus.Logger) (model.UserFull, error) {
+func (repo *UserDB) GetUserData(id int, logrus *logrus.Logger) (model.UserFull, error) {
 	var user model.UserFull
-	query := fmt.Sprintf("SELECT  	id,	email,	firstname,	secondname,	city,	is_verified,	account_image_path,	phone,	rating,	post_views,	is_super_user	FROM %s WHERE id=$1 ", usersTable)
+
+	query := fmt.Sprintf("SELECT  	id,	email,	username,	city,	is_verified,	account_image_path,	phone,	rating,	post_views,	is_super_user	FROM %s WHERE id=$1 ", usersTable)
 	err := repo.db.Get(&user, query, id)
 	if err != nil {
 		logrus.Errorf("ERROR: don't get users %s", err)

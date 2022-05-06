@@ -15,7 +15,7 @@ type Authorization interface {
 	VerifyEmail(id int, logrus *logrus.Logger) (int64, error)
 }
 type User interface {
-	GetUserData(id string, logrus *logrus.Logger) (model.UserFull, error)
+	GetUserData(id int, logrus *logrus.Logger) (model.UserFull, error)
 	UpdateAccountImage(id int, filePath string, logrus *logrus.Logger) (int64, error)
 	UpdateProfile(id int, username string, city string, phone string, logrus *logrus.Logger) (int64, error)
 }

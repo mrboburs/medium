@@ -40,8 +40,7 @@ func (handler *Handler) signUp(ctx *gin.Context) {
 		error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, err.Error(), logrus)
 		return
 	}
-	repository.SetUserId(id)
-	repository.GetAccountId()
+
 	token, err := handler.services.Authorization.GenerateToken(input.Email, input.Password, logrus)
 	if err != nil {
 		error.NewHandlerErrorResponse(ctx, http.StatusInternalServerError, err.Error(), logrus)
@@ -106,8 +105,13 @@ func (handler *Handler) signIn(ctx *gin.Context) {
 func (handler *Handler) ConfirmEmail(ctx *gin.Context) {
 	logrus := handler.logrus
 	var CodeInput model.VerificationCode
+	userId, err := getUserId(ctx, logrus)
+	if err != nil {
+		error.NewHandlerErrorResponse(ctx, http.StatusInternalServerError, err.Error(), logrus)
+		return
+	}
 	// Id := repository.GetAccountId()
-	err := ctx.BindJSON(&CodeInput)
+	err = ctx.BindJSON(&CodeInput)
 	if err != nil {
 		error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, err.Error(), logrus)
 		return
@@ -115,7 +119,7 @@ func (handler *Handler) ConfirmEmail(ctx *gin.Context) {
 	code := repository.GetVerificationCode()
 	if code == CodeInput.Code {
 		ctx.JSON(http.StatusOK, model.ResponseSuccess{Message: "correct verificationCode", Data: true})
-		effectedRowsNum, err := handler.services.Authorization.VerifyEmail(repository.GetAccountId(), logrus)
+		effectedRowsNum, err := handler.services.Authorization.VerifyEmail(userId, logrus)
 		if effectedRowsNum == 0 {
 			error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, "User not found", logrus)
 			return

@@ -26,7 +26,7 @@ func (service *UserService) UpdateProfile(id int, username string, city string, 
 	return int(count), nil
 }
 
-func (service *UserService) GetUserData(id string, logrus *logrus.Logger) (user model.UserFull, err error) {
+func (service *UserService) GetUserData(id int, logrus *logrus.Logger) (user model.UserFull, err error) {
 	user, err = service.repo.GetUserData(id, logrus)
 	if err != nil {
 		logrus.Error("ERROR: get user Data failed: %v", err)

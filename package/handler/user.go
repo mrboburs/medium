@@ -3,12 +3,12 @@ package handler
 import (
 	"fmt"
 	"mediumuz/model"
-	"mediumuz/package/repository"
+	// "mediumuz/package/repository"
 
 	// "mediumuz/package/repository"
 	"mediumuz/util/error"
 	"net/http"
-	"strconv"
+	// "strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,7 +33,7 @@ func (handler *Handler) resendCodeToEmail(ctx *gin.Context) {
 	if err != nil {
 		return
 	}
-	userId := strconv.Itoa(id)
+	userId := id
 	user, err := handler.services.GetUserData(userId, logrus)
 	logrus.Infof(user.Email)
 	// err = handler.services.SendCodeToEmail(user.Email, user.UserName, logrus)
@@ -61,13 +61,18 @@ func (handler *Handler) resendCodeToEmail(ctx *gin.Context) {
 func (handler *Handler) UpdateProfile(ctx *gin.Context) {
 	logrus := handler.logrus
 	var input model.UserUpdate
-	err := ctx.BindJSON(&input)
+	userId, err := getUserId(ctx, logrus)
+	if err != nil {
+		error.NewHandlerErrorResponse(ctx, http.StatusInternalServerError, err.Error(), logrus)
+		return
+	}
+	err = ctx.BindJSON(&input)
 	if err != nil {
 		error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, err.Error(), logrus)
 		return
 	}
 
-	effectedRowsNum, err := handler.services.User.UpdateProfile(repository.GetAccountId(), input.UserName, input.City, input.Phone, logrus)
+	effectedRowsNum, err := handler.services.User.UpdateProfile(userId, input.UserName, input.City, input.Phone, logrus)
 	if effectedRowsNum == 0 {
 		error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, "User not found", logrus)
 		return
@@ -76,7 +81,7 @@ func (handler *Handler) UpdateProfile(ctx *gin.Context) {
 		return
 	} else {
 
-		ctx.JSON(http.StatusOK, model.ResponseSuccess{Message: "DONE", Data: effectedRowsNum})
+		ctx.JSON(http.StatusOK, model.ResponseSuccess{Message: "DONE", Data: userId})
 	}
 
 }
@@ -106,7 +111,8 @@ func (handler *Handler) uploadAccountImage(ctx *gin.Context) {
 	if err != nil {
 		return
 	}
-	userId := strconv.Itoa(id)
+	userId := id
+	//  strconv.Itoa(id)
 	ctx.Request.ParseMultipartForm(10 << 20)
 	file, header, err := ctx.Request.FormFile("file")
 
@@ -133,11 +139,34 @@ func (handler *Handler) uploadAccountImage(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, model.ResponseSuccess{Message: "Uploaded", Data: filePath})
 }
 
-func (handler *Handler) updateAccount(ctx *gin.Context) {
+// @Summary Get Account
+// @Description Get Account
+// @ID get-account
+// @Tags   Profile
+// @Accept       json
+// @Produce      json
+// @Param id query int false "id"
+// @Success      200   {object}      model.ResponseSuccess
+// @Failure 400,404 {object} error.errorResponse
+// @Failure 409 {object} error.errorResponse
+// @Failure 500 {object} error.errorResponse
+// @Failure default {object} error.errorResponse
+// @Router   /api/account/get-user [GET]
+//@Security ApiKeyAuth
+func (handler *Handler) GetUserData(ctx *gin.Context) {
+	logrus := handler.logrus
 
-}
+	userId, err := getUserId(ctx, logrus)
+	if err != nil {
+		error.NewHandlerErrorResponse(ctx, http.StatusInternalServerError, err.Error(), logrus)
+		return
+	}
 
-func (handler *Handler) getUser(ctx *gin.Context) {
+	user, err := handler.services.User.GetUserData(userId, logrus)
+	if err != nil {
+		error.NewHandlerErrorResponse(ctx, http.StatusBadRequest, "User not found", logrus)
+	}
+	ctx.JSON(http.StatusOK, model.ResponseSuccess{Message: "here is userData", Data: user})
 
 }
 

@@ -48,10 +48,10 @@ func (handler *Handler) InitRoutes() *gin.Engine {
 		{
 			account.PATCH("/upload-image", handler.uploadAccountImage)
 			account.POST("/update", handler.UpdateProfile)
+			account.GET("/get-user", handler.GetUserData)
 
-			account.GET("/get", handler.getUser)
 			account.GET("/resend", handler.resendCodeToEmail)
-			account.GET("/search", handler.getUser)
+
 		}
 	}
 	return router
