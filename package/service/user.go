@@ -1,8 +1,9 @@
 package service
 
 import (
-	"fmt"
+	// "fmt"
 	"io"
+	"mediumuz/configs"
 	"mediumuz/model"
 	"mediumuz/package/repository"
 	"mediumuz/util/logrus"
@@ -18,27 +19,23 @@ func NewUserService(repo repository.User) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (service *UserService) UpdateProfile(id int, username string, city string, phone string, logrus *logrus.Logger) (int, error) {
-	count, err := service.repo.UpdateProfile(id, username, city, phone, logrus)
+func (service *UserService) UpdateProfile(id int, user model.UserUpdate, logrus *logrus.Logger) (int64, error) {
+	count, err := service.repo.UpdateProfile(id, user, logrus)
 	if err != nil {
 		return 0, err
 	}
-	return int(count), nil
+	return count, nil
 }
 
-func (service *UserService) GetUserData(id int, logrus *logrus.Logger) (user model.UserFull, err error) {
-	user, err = service.repo.GetUserData(id, logrus)
-	if err != nil {
-		logrus.Error("ERROR: get user Data failed: %v", err)
-		return user, err
-	}
-	return user, nil
+func (service *UserService) GetUserById(id string, logrus *logrus.Logger) (model.UserFull, error) {
+	return service.repo.GetUserById(id, logrus)
+
 }
 
-func (service *UserService) UploadAccountImage(file multipart.File, header *multipart.FileHeader, user model.UserFull, logrus *logrus.Logger) (string, error) {
+func (service *UserService) UploadAccountImage(file multipart.File, header *multipart.FileHeader, logrus *logrus.Logger) (string, error) {
 
 	filename := header.Filename
-	folderPath := fmt.Sprintf("public/%s/", user.UserName)
+	folderPath := "public/"
 	err := os.MkdirAll(folderPath, 0777)
 	if err != nil {
 		logrus.Errorf("ERROR: Failed to create folder %s: %v", folderPath, err)
@@ -62,9 +59,26 @@ func (service *UserService) UploadAccountImage(file multipart.File, header *mult
 		logrus.Errorf("ERROR: Failed copy %s", err)
 		return "", err
 	}
-	return filePath, nil
+	configs, err := configs.InitConfig()
+	logrus.Infof("configs %v", configs)
+	if err != nil {
+		logrus.Fatalf("error initializing configs: %s", err.Error())
+	}
+	imageURL := configs.ServiceHost + "/" + filePath
+	return imageURL, nil
 }
 
 func (service *UserService) UpdateAccountImage(id int, filePath string, logrus *logrus.Logger) (int64, error) {
 	return service.repo.UpdateAccountImage(id, filePath, logrus)
+}
+
+func (service *UserService) CheckUserId(id int, logrus *logrus.Logger) (int, error) {
+	return service.repo.CheckUserId(id, logrus)
+}
+func (s *UserService) GetAllUsers(logrus *logrus.Logger) (array []model.UserFull, err error) {
+	return s.repo.GetAllUsers(logrus)
+}
+
+func (s *UserService) DeleteUser(id string, logrus *logrus.Logger) error {
+	return s.repo.DeleteUser(id, logrus)
 }

@@ -14,7 +14,7 @@ import (
 )
 
 // @title MediumuZ API
-// @version 2.0
+// @version 1.0
 // @description API Server for MediumuZ Application
 // @host localhost:8080
 // @BasePath /

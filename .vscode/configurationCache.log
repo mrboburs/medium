@@ -1,0 +1,1 @@
+{"buildTargets":["migrate-down","migrate-up","run-go","run-psql","run-redis","start-psql","start-redis","swag"],"launchTargets":[],"customConfigurationProvider":{"workspaceBrowse":{"browsePath":[],"compilerArgs":[]},"fileIndex":[]}}

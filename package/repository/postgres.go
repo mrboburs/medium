@@ -17,7 +17,9 @@ type Config struct {
 }
 
 const (
-	usersTable = "users"
+	usersTable    = "users"
+	postTable     = "post"
+	postUserTable = "post_user"
 )
 
 func NewPostgresDB(cfg Config, logrus *logrus.Logger) (*sqlx.DB, error) {

@@ -3,22 +3,26 @@ run-go:
 	go run command/main.go
 
 run-psql:
-	sudo docker start mediumuz
+	sudo docker start medium-db
 
 run-redis:
 	sudo docker start redisdb
 
 start-psql:
-	sudo docker run --name mediumuz -e POSTGRES_PASSWORD=0224 -d -p 2001:5432 postgres
+	sudo docker run medium-db 
 
 start-redis:
-	sudo docker run --redisdb redis-test-instance -p 6379:6379 -d redis
+	sudo docker run redis-test-instance 
 
 swag:
 	swag init -g command/main.go
 
 migrate-up:
-	migrate -path ./schema -database 'postgresql://postgres:0224@localhost:2001/mediumuz?sslmode=disable' up
+	migrate -path ./schema -database 'postgresql://postgres:1996@localhost:5434/postgres?sslmode=disable' up
 
 migrate-down:
-	migrate -path ./schema -database 'postgresql://postgres:0224@localhost:2001/mediumuz?sslmode=disable' down
+	migrate -path ./schema -database 'postgresql://postgres:1996@localhost:5434/postgres?sslmode=disable' down
+
+
+
+

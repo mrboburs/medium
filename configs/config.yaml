@@ -1,8 +1,8 @@
 app:
-  name: MediumuZ
-  host: localhost
+  
+  host: localhost:8080
   port: '8080'
-  version: '1.0'
+
 
 db:
   dbname: postgres

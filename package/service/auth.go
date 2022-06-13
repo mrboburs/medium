@@ -34,14 +34,11 @@ func NewAuthService(repo repository.Authorization) *AuthService {
 func (service *AuthService) CreateUser(user model.User, logrus *logrus.Logger) (int, error) {
 	user.Password = generatePasswordHash(user.Password)
 	logrus.Info("successfully password_hash")
-	id, err := service.repo.CreateUser(user, logrus)
-	if err != nil {
-		return 0, err
-	}
-	return id, err
+	return service.repo.CreateUser(user, logrus)
+
 }
-func (s *AuthService) VerifyEmail(id int, logrus *logrus.Logger) (int, error) {
-	count, err := s.repo.VerifyEmail(id, logrus)
+func (s *AuthService) IsVerified(id int, logrus *logrus.Logger) (int, error) {
+	count, err := s.repo.IsVerified(id, logrus)
 	if err != nil {
 		return 0, err
 	}
@@ -87,4 +84,13 @@ func generatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+}
+
+func (s *AuthService) GetUser(email, password string) (model.User, error) {
+	return s.repo.GetUser(email, password)
+
+}
+
+func (s *AuthService) GetUserID(email string, logrus *logrus.Logger) (int, error) {
+	return s.repo.GetUserID(email, logrus)
 }

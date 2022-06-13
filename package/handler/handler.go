@@ -31,27 +31,42 @@ func (handler *Handler) InitRoutes() *gin.Engine {
 	// docs.SwaggerInfo_swagger.Host = config.ServiceHost + config.HTTPPort
 	// docs.SwaggerInfo_swagger.Schemes = []string{ "https"}
 	router := gin.New()
+	router.Static("/public", "./public/")
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	auth := router.Group("/auth")
+
+	api := router.Group("/api", handler.userIdentity)
 	{
 		auth.POST("/sign-up", handler.signUp)
 		auth.POST("/sign-in", handler.signIn)
-		auth.POST("/verify", handler.ConfirmEmail)
+		api.POST("/verify", handler.ConfirmByEmail)
 		//recoveryPassword
 		// auth.GET("/recovery")
 		// auth.GET("/verify-code")
 		// auth.GET("/recovery-password")
 	}
-	api := router.Group("/api", handler.userIdentity)
 	{
 		account := api.Group("/account")
 		{
 			account.PATCH("/upload-image", handler.uploadAccountImage)
 			account.POST("/update", handler.UpdateProfile)
-			account.GET("/get-user", handler.GetUserData)
+			account.GET("/get", handler.GetUserById)
+			account.DELETE("/delete", handler.DeleteUser)
+			account.GET("/getUsers", handler.GetAllUsers)
 
-			account.GET("/resend", handler.resendCodeToEmail)
-
+		}
+		post := api.Group("/post")
+		{
+			post.POST("/create", handler.createPost)
+			router.Group("/post").GET("/get-comments", handler.getComments)
+			post.GET("/count-like/:id", handler.ClickLike)
+			post.POST("/comment", handler.commentPost)
+			post.GET("/view", handler.viewPost)
+			post.POST("/update/:id", handler.UpdatePost)
+			router.Group("/post").GET("/get/:id", handler.getPostID)
+			router.Group("/post").GET("/get-all", handler.GetAllPosts)
+			post.DELETE("/delete/:id", handler.PostDelete)
+			post.PATCH("/upload/:id", handler.uploadPostImg)
 		}
 	}
 	return router

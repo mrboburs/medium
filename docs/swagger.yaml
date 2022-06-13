@@ -1,22 +1,36 @@
 basePath: /
 definitions:
-  error.errorResponse:
+  handler.ResponseSuccessForCreatePost:
+    properties:
+      message:
+        type: string
+      postId:
+        type: integer
+    type: object
+  handler.errorResponse:
     properties:
       message:
         type: string
     type: object
-  model.ResponseSignIn:
+  model.CommentPost:
     properties:
-      email:
+      post_comment:
+        default: Wonderful
         type: string
-      token:
-        type: string
-    type: object
-  model.ResponseSignUp:
-    properties:
-      id:
+      post_id:
         type: integer
-      token:
+    type: object
+  model.Post:
+    properties:
+      tags:
+        items:
+          type: string
+        type: array
+      text:
+        default: Hello World
+        type: string
+      title:
+        default: Tutorial Golang
         type: string
     type: object
   model.ResponseSuccess:
@@ -36,13 +50,22 @@ definitions:
     type: object
   model.User:
     properties:
+      bio:
+        default: I am Golang dev
+        type: string
       city:
         default: Navoi
         type: string
       email:
         default: babdusalom72@gmail.com
         type: string
-      image:
+      first_name:
+        default: MY
+        type: string
+      interests:
+        type: string
+      last_name:
+        default: mrb
         type: string
       password:
         default: "1996"
@@ -50,20 +73,25 @@ definitions:
       phone:
         default: +9989 99 331 96 12
         type: string
-      username:
-        default: MY
-        type: string
     type: object
   model.UserUpdate:
     properties:
+      bio:
+        default: I am Golang dev
+        type: string
       city:
         default: Navoi
         type: string
+      first_name:
+        default: MY
+        type: string
+      interests:
+        type: string
+      last_name:
+        default: mrb
+        type: string
       phone:
         default: +9989 99 331 96 12
-        type: string
-      username:
-        default: MY
         type: string
     type: object
   model.VerificationCode:
@@ -77,13 +105,43 @@ info:
     name: Mr Bobur
   description: API Server for MediumuZ Application
   title: MediumuZ API
-  version: "2.0"
+  version: "1.0"
 paths:
-  /api/account/get-user:
+  /api/account/delete:
+    delete:
+      consumes:
+      - application/json
+      description: delete user
+      operationId: delete-user
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete User
+      tags:
+      - Profile
+  /api/account/get:
     get:
       consumes:
       - application/json
-      description: Get Account
+      description: GetUserById
       operationId: get-account
       parameters:
       - description: id
@@ -100,64 +158,56 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Get Account
+      summary: GetUserById
       tags:
       - Profile
-  /api/account/resend:
+  /api/account/getUsers:
     get:
       consumes:
       - application/json
-      description: resend code to email for  verification
-      operationId: resend-code-email
+      description: get  users
+      operationId: get-users
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.ResponseSuccess'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/error.errorResponse'
-        "409":
-          description: Conflict
-          schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
       security:
       - ApiKeyAuth: []
-      summary: Resend cod for  Verification Email
+      summary: Get AllUsers
       tags:
       - Profile
   /api/account/update:
@@ -176,30 +226,26 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.ResponseSuccess'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
       security:
       - ApiKeyAuth: []
       summary: UpdateProfile
@@ -232,28 +278,387 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
       security:
       - ApiKeyAuth: []
       summary: Upload Account Image
       tags:
       - Profile
+  /api/post/comment:
+    post:
+      consumes:
+      - application/json
+      description: Commit post by user
+      operationId: commit-post-id
+      parameters:
+      - description: commit info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.CommentPost'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Commit  Post
+      tags:
+      - Post
+  /api/post/count-like/{id}:
+    get:
+      consumes:
+      - application/json
+      description: update like-count
+      operationId: counting-like
+      parameters:
+      - description: Param ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: ClickLike
+      tags:
+      - Post
+  /api/post/create:
+    post:
+      consumes:
+      - application/json
+      description: create post
+      operationId: create-post
+      parameters:
+      - description: post info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Post'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResponseSuccessForCreatePost'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Create Post
+      tags:
+      - Post
+  /api/post/delete/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: delete post by id
+      operationId: delete-post-id
+      parameters:
+      - description: Param ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete  Post By ID
+      tags:
+      - Post
+  /api/post/update/{id}:
+    post:
+      consumes:
+      - application/json
+      description: update post
+      operationId: update-post
+      parameters:
+      - description: Param ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: account info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.Post'
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: UpdatePost
+      tags:
+      - Post
+  /api/post/upload/{id}:
+    patch:
+      consumes:
+      - application/json
+      - multipart/form-data
+      description: Upload Post Image
+      operationId: uploadImgPost
+      parameters:
+      - description: Param ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: file
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      - application/octet-stream
+      - image/png
+      - image/jpeg
+      - image/jpg
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Upload Post Image
+      tags:
+      - Post
+  /api/post/view:
+    get:
+      consumes:
+      - application/json
+      description: View post by id
+      operationId: view-post-id
+      parameters:
+      - description: Param ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: View  Post By ID
+      tags:
+      - Post
+  /api/verify:
+    post:
+      consumes:
+      - application/json
+      description: verify account
+      operationId: verify-account
+      parameters:
+      - description: verification code
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/model.VerificationCode'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ResponseSuccess'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - ApiKeyAuth: []
+      summary: Verify account by email
+      tags:
+      - Auth
   /auth/sign-in:
     post:
       consumes:
@@ -261,7 +666,7 @@ paths:
       description: login account
       operationId: login-account
       parameters:
-      - description: accountin infor
+      - description: credentials
         in: body
         name: input
         required: true
@@ -270,30 +675,26 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.ResponseSignIn'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
       security:
       - ApiKeyAuth: []
       summary: SignIn
@@ -315,48 +716,130 @@ paths:
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.ResponseSignUp'
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
       security:
       - ApiKeyAuth: []
       summary: SignUp
       tags:
       - Auth
-  /auth/verify:
-    post:
+  /post/get-all:
+    get:
       consumes:
       - application/json
-      description: verify account
-      operationId: verify-account
+      description: Get  Posts
+      operationId: get-posts
       parameters:
-      - description: account info
-        in: body
-        name: input
+      - description: 'Offset '
+        in: query
+        name: offset
+        type: integer
+      - description: 'Limit '
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get  Posts
+      tags:
+      - Post
+  /post/get-comments:
+    get:
+      consumes:
+      - application/json
+      description: get commits
+      operationId: get-comments
+      parameters:
+      - description: 'Offset '
+        in: query
+        name: offset
+        type: integer
+      - description: 'Limit '
+        in: query
+        name: limit
+        type: integer
+      - description: 'postID '
+        in: query
+        name: postID
         required: true
-        schema:
-          $ref: '#/definitions/model.VerificationCode'
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get Comments
+      tags:
+      - Post
+  /post/get/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get post by id
+      operationId: get-post-id
+      parameters:
+      - description: Param ID
+        in: path
+        name: id
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -367,28 +850,26 @@ paths:
         "400":
           description: Bad Request
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "404":
           description: Not Found
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "409":
           description: Conflict
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         "500":
           description: Internal Server Error
           schema:
-            $ref: '#/definitions/error.errorResponse'
+            $ref: '#/definitions/handler.errorResponse'
         default:
           description: ""
           schema:
-            $ref: '#/definitions/error.errorResponse'
-      security:
-      - ApiKeyAuth: []
-      summary: Verify email
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get  Post By ID
       tags:
-      - Auth
+      - Post
 securityDefinitions:
   ApiKeyAuth:
     in: header
